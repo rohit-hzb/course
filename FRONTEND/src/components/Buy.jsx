@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import { BACKEND_URL } from "../../utils/utils";
 
 function Buy() {
   const { courseId } = useParams();
@@ -32,7 +33,7 @@ function Buy() {
       // Debugging: Log API URL
 
       const response = await axios.post(
-        `http://localhost:3001/api/v1/course/buy/${courseId}`,
+        `${BACKEND_URL}/course/buy/${courseId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
       );

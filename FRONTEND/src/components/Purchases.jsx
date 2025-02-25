@@ -7,6 +7,7 @@ import { IoLogIn, IoLogOut } from "react-icons/io5";
 import { RiHome2Fill } from "react-icons/ri";
 import { HiMenu, HiX } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../../utils/utils";
 
 function Purchases() {
   const [purchases, setPurchases] = useState([]);
@@ -24,7 +25,7 @@ function Purchases() {
 
     const fetchPurchases = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/v1/user/purchases", {
+        const response = await axios.get(`${BACKEND_URL}/user/purchases`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
@@ -48,7 +49,7 @@ function Purchases() {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3001/api/v1/user/logout", { withCredentials: true });
+      await axios.get(`${BACKEND_URL}/user/logout`, { withCredentials: true });
       toast.success("Logged out successfully");
       localStorage.removeItem("user");
       navigate("/login");

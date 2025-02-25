@@ -7,6 +7,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import toast from "react-hot-toast";
+import { BACKEND_URL } from "../../utils/utils";
 
 function Home() {
   const [courses, setCourses] = useState([]);
@@ -22,7 +23,7 @@ function Home() {
   }, []);
   const handleLogout = async () => {
     try {
-    const response=  axios.get("http://localhost:3001/api/v1/user/logout",{
+    const response=  axios.get(`${BACKEND_URL}/user/logout`,{
         withCredentials:true,
       });
       toast.success((await response).data.message);
@@ -36,7 +37,7 @@ function Home() {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3001/api/v1/course/courses",
+          `${BACKEND_URL}/course/courses`,
           { withCredentials: true }
         );
         setCourses(response.data.courses); // Fixed: Now updating state
