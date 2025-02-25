@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for API call
 import { FaCircleUser } from "react-icons/fa6";
 import { RiHome2Fill } from "react-icons/ri";
@@ -11,7 +11,7 @@ import { FiSearch } from "react-icons/fi";
 import { HiMenu, HiX } from "react-icons/hi"; // Import menu and close icons
 import logo from "../../public/logo.webp";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
@@ -38,7 +38,7 @@ function Courses() {
         const response = await axios.get("http://localhost:3001/api/v1/course/courses", {
           withCredentials: true,
         });
-        console.log(response.data.courses);
+        // console.log(response.data.courses);
         setCourses(response.data.courses);
         setLoading(false);
       } catch (error) {

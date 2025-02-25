@@ -139,34 +139,60 @@ export const courseDetails = async (req, res) => {
 };
 
 // Purchase a course
+import Stripe from "stripe";
+import config from "../routes/config.js";
+const stripe=new Stripe(config.STRIPE_SECRET_KEY);
+
 export const buyCourse = async (req, res) => {
   const { userId } = req;
   const { courseId } = req.params;
 
-  try {
-    if (!mongoose.Types.ObjectId.isValid(courseId)) {
-      return res.status(400).json({ error: "Invalid course ID format" });
-    }
 
+  if (!userId) {
+    return res.status(401).json({ errors: "User is not authenticated" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
+    return res.status(400).json({ errors: "Invalid course ID format" });
+  }
+
+  try {
     const course = await Course.findById(courseId);
+
     if (!course) {
-      return res.status(404).json({ error: "Course not found" });
+      return res.status(404).json({ errors: "Course not found" });
     }
 
     const existingPurchase = await Purchase.findOne({ userId, courseId });
     if (existingPurchase) {
-      return res.status(400).json({ error: "User has already purchased this course" });
+      return res.status(400).json({ errors: "User has already purchased this course" });
     }
 
-    const newPurchase = await Purchase.create({
-      userId,
-      courseId,
-      purchaseDate: new Date(),
+    // Stripe payment process
+    const amount = course.price * 100; // Convert to cents
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: "usd",
+      payment_method_types: ["card"],
     });
 
-    res.status(201).json({ message: "Course purchased successfully", purchase: newPurchase });
+
+    // ✅ Save the purchase in the database
+    const newPurchase = new Purchase({
+      userId,
+      courseId,
+      paymentIntentId: paymentIntent.id, // Save Stripe payment ID
+      status: "paid",
+    });
+
+    await newPurchase.save(); // Save to MongoDB
+
+    return res.status(201).json({
+      message: "Course purchased successfully!",
+      paymentIntent,
+    });
   } catch (error) {
     console.error("Error in course purchase:", error);
-    res.status(500).json({ errors: "Internal Server Error" });
+    return res.status(500).json({ errors: "Internal Server Error" });
   }
 };

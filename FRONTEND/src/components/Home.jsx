@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import logo from "../../public/logo.webp";
 import { Link } from "react-router-dom";
 import { FaInstagram, FaFacebook, FaWhatsapp } from "react-icons/fa";
@@ -39,7 +39,6 @@ function Home() {
           "http://localhost:3001/api/v1/course/courses",
           { withCredentials: true }
         );
-        console.log(response.data.courses);
         setCourses(response.data.courses); // Fixed: Now updating state
       } catch (error) {
         console.log("Error fetching courses:", error);

@@ -1,30 +1,22 @@
 import jwt from "jsonwebtoken";
+import config from "../routes/config.js";
 
 function adminMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
-
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "No token provided" });
+    return res.status(401).json({ errors: "No token provided" });
   }
-
-  // Extract token properly
   const token = authHeader.split(" ")[1];
 
-  if (!token) {
-    return res.status(401).json({ error: "Invalid token format" });
-  }
-
   try {
-    // Synchronous token verification
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Assign userId from decoded token
-    req.adminId = decoded.id; // Ensure your token payload contains `id`
+    const decoded = jwt.verify(token, config.JWT_ADMIN_PASSWORD);
+    console.log(decoded);
+    req.adminId = decoded.id;
 
     next();
   } catch (error) {
-    console.error("Invalid token or expired:", error.message);
-    return res.status(403).json({ error: "Invalid or expired token" });
+    return res.status(401).json({ errors: "Invalid token or expired" });
+    console.log("error in user middleware", error);
   }
 }
 

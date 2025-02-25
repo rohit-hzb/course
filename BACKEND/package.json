@@ -24,6 +24,7 @@
     "mongoose": "^8.10.1",
     "multer": "^1.4.5-lts.1",
     "react-hot-toast": "^2.5.2",
+    "stripe": "^17.6.0",
     "zod": "^3.24.2"
   }
 }

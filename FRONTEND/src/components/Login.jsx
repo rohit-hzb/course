@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import logo from "../../public/logo.webp";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
@@ -17,33 +17,44 @@ function Login() {
     try {
       const response = await axios.post(
         "http://localhost:3001/api/v1/user/login",
-        {
-          email,
-          password,
-        },
+        { email, password },
         {
           withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
-      console.log("Login successful: ", response.data);
-      toast.success(response.data.message);
-      localStorage.setItem("user", JSON.stringify(response.data));
+
+      console.log("Login successful:", response.data);
+
+      toast.success(response.data.message || "Login successful!");
+
+      // Ensure the token is stored properly
+      if (response.data.token) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ token: response.data.token, user: response.data.user })
+        );
+      } else {
+        throw new Error("Token not received from the server");
+      }
+
       navigate("/");
     } catch (error) {
+      console.error("Login error:", error);
+
       if (error.response) {
-        setErrorMessage(error.response.data.errors || "Login failed!!!");
+        setErrorMessage(error.response.data.errors || "Login failed!");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
       }
     }
   };
 
   return (
-    <div className="bg-gradient-to-r from-black to-blue-950 ">
-      <div className="h-screen container mx-auto flex  items-center justify-center text-white">
+    <div className="bg-gradient-to-r from-black to-blue-950">
+      <div className="h-screen container mx-auto flex items-center justify-center text-white">
         {/* Header */}
-        <header className="absolute top-0 left-0 w-full flex justify-between items-center p-5  ">
+        <header className="absolute top-0 left-0 w-full flex justify-between items-center p-5">
           <div className="flex items-center space-x-2">
             <img src={logo} alt="Logo" className="w-10 h-10 rounded-full" />
             <Link to={"/"} className="text-xl font-bold text-orange-500">
